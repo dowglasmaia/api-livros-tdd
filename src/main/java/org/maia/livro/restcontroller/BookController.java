@@ -2,7 +2,7 @@ package org.maia.livro.restcontroller;
 
 import org.maia.livro.domain.Book;
 import org.maia.livro.dtos.BookDTO;
-import org.maia.livro.services.BookServices;
+import org.maia.livro.services.BookServicesImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
 
     @Autowired
-    private BookServices service;
+    private BookServicesImpl service;
 
     @Autowired
     private ModelMapper modelMapper;

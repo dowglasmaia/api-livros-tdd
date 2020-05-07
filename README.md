@@ -8,3 +8,5 @@ https://swagger.io/
 https://junit.org/junit5/
 
 https://spring.io/projects/spring-boot
+
+https://joel-costigliola.github.io/assertj/index.html
