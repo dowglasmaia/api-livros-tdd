@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.dtos.BookDTO;
+import org.maia.livro.exception.BusinessException;
 import org.maia.livro.services.BookServicesImpl;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -38,16 +39,16 @@ public class BookControllerTest {
     @MockBean
     BookServicesImpl services;
 
+    private BookDTO createNewBook() {
+        return BookDTO.builder().author("Dowglas Maia").title("Game of Thrones Vol 05").isbn("Vol 5 03º Ed").build();
+    }
 
     @Test
     @DisplayName("Deve criar um livro com sucesso.")
     public void createBookTest()  throws  Exception{
-        BookDTO dto = BookDTO.builder().author("Dowglas Maia").title("Game of Thrones Vol 05").isbn("Vol 5 03º Ed").build();
-
+        BookDTO dto = createNewBook();
         Book saveBook = Book.builder().author("Dowglas Maia").title("Game of Thrones Vol 05").isbn("Vol 5 03º Ed").id(1L).build();
-
         BDDMockito.given(services.save(Mockito.any(Book.class))).willReturn(saveBook);
-
         String json = new ObjectMapper().writeValueAsString(dto);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -62,13 +63,13 @@ public class BookControllerTest {
                 .andExpect(jsonPath("title").value(dto.getTitle()))
                 .andExpect(jsonPath("author").value(dto.getAuthor()))
                 .andExpect(jsonPath("isbn").value(dto.getIsbn()));
-
     }
+
+
 
     @Test
     @DisplayName("Deve lançar error de validação quando não houver dados suficientes para criação do livro.")
     public void createInvalidBookTest()  throws  Exception {
-
         String json = new ObjectMapper().writeValueAsString(new BookDTO());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -80,6 +81,29 @@ public class BookControllerTest {
         mvc.perform(request)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errors", Matchers.hasSize(3))); // Matchers.hasSize(3) - numero de campos qual estarão invalidos
+
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro ao tentar cadastrar um livro com isbn ja cadastrado no sistema.")
+    public void createBookWithDuplicatedIsbn()throws  Exception {
+        BookDTO dto = createNewBook();
+        String json = new ObjectMapper().writeValueAsString(dto);
+        String msgError = "Isbn já cadastrado!";
+
+        BDDMockito.given(services.save(Mockito.any(Book.class)))
+                .willThrow(new BusinessException(msgError));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors",Matchers.hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value(msgError));
 
     }
 
