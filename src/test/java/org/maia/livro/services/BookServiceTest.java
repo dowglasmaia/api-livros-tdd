@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.repository.BookRepository;
+import org.maia.livro.services.impl.BookServicesImpl;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("tests")
 public class BookServiceTest {
 
+
     BookServicesImpl service;
 
     @MockBean
@@ -26,7 +28,7 @@ public class BookServiceTest {
 
     @BeforeEach
     public void setUp() {
-        this.service = new BookServicesImpl();
+        this.service = new BookServicesImpl(repository);
     }
 
 
@@ -47,7 +49,7 @@ public class BookServiceTest {
                         .author("kayron").build());
 
         //execução
-        Book savedBook = repository.save(book);
+        Book savedBook = service.save(book);
 
         //verificação/
         assertThat(savedBook.getId()).isNotNull();

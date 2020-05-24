@@ -1,22 +1,33 @@
-package org.maia.livro.services;
+package org.maia.livro.services.impl;
 
 import org.maia.livro.domain.Book;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.repository.BookRepository;
+import org.maia.livro.services.interfaces.BookServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
-public class BookServicesImpl {
+import java.util.Optional;
 
-    @Autowired
+@Service
+public class BookServicesImpl implements BookServices {
+
     private BookRepository repository;
+
+    public BookServicesImpl(BookRepository repository){
+        this.repository = repository;
+    }
 
     public Book save(Book obj) {
         if(repository.existsByIsbn(obj.getIsbn()) ){
             throw new BusinessException("Isbn já cadastrado!");
         }
         return repository.save(obj);
+    }
+
+
+    public Optional<Book> getById(Long id) {
+        return repository.findById(id);
     }
 
 }
