@@ -3,6 +3,7 @@ package org.maia.livro.restcontroller;
 import org.maia.livro.domain.Book;
 import org.maia.livro.dtos.BookDTO;
 import org.maia.livro.exception.ApiErrors;
+import org.maia.livro.exception.BusinessException;
 import org.maia.livro.services.BookServicesImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,11 @@ public class BookController {
         return new ApiErrors(result);
     }
 
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handlerBusinessException(BusinessException ex){
+        return new ApiErrors(ex);
+
+    }
 
 }
