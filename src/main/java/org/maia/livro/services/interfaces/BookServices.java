@@ -14,4 +14,5 @@ public interface BookServices {
 
     Optional<Book>getById(Long id);
 
+    void delete(Book book);
 }
