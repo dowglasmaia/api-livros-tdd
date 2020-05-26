@@ -176,7 +176,7 @@ public class BookControllerTest {
 
         //execução
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get(BOOK_API.concat("/"+1))
+                .delete(BOOK_API.concat("/"+1))
                 .accept(MediaType.APPLICATION_JSON);
 
         //verificação
