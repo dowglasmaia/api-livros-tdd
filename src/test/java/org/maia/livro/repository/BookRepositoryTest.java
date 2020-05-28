@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.services.impl.BookServicesImpl;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -27,9 +28,6 @@ public class BookRepositoryTest {
 
     @Autowired
     private BookRepository repository;
-
-    @Autowired
-    private BookServicesImpl services;
 
     private Book createBook() {
         return Book.builder().title("Aventuras").author("Kayron").isbn("123").build();
@@ -61,6 +59,20 @@ public class BookRepositoryTest {
 
         //verificação
         Assertions.assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve obter um livro por id")
+    public void findByIdTest(){
+        //cenario
+        Book book = createBook(); // cria um livro populado
+        entityManager.persist(book); // simula um insert na banco
+
+        //execução
+        Optional<Book> foundBook = repository.findById(book.getId()); // retorna o livro persistido
+
+        //verificação
+        Assertions.assertThat(foundBook.isPresent()).isTrue();  //espera um livro na resposta
     }
 
 
