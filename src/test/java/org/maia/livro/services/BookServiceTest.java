@@ -14,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -41,7 +43,7 @@ public class BookServiceTest {
     public void saveBookTest() {
         //cenario
         Book book = createBook();
-        Mockito.when( repository.existsByIsbn(Mockito.anyString())).thenReturn(false);
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(false);
         Mockito.when(repository.save(book)).thenReturn(
                 Book.builder().id(1l)
                         .isbn("123")
@@ -63,10 +65,10 @@ public class BookServiceTest {
     public void shoulNotSaveABookWithDuplicatedISBN() {
         //cenario
         Book book = createBook();
-        Mockito.when( repository.existsByIsbn(Mockito.anyString())).thenReturn(true);
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(true);
 
         //execução
-        Throwable exception = Assertions.catchThrowable( () -> service.save(book) );
+        Throwable exception = Assertions.catchThrowable(() -> service.save(book));
 
         //verificação
         assertThat(exception)
@@ -76,5 +78,38 @@ public class BookServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Deve obter um livro por ID")
+    public void getByIdTest() {
+        //CENARIO
+        Long id = 1l;
+        Book book = createBook();
+        book.setId(id);
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(book)); // simula uma pesquisa ao banco de Dados
 
+        //EXECUÇÃO
+        Optional<Book> foundBook = service.getById(id);
+
+        //VERIFICAÇÃO
+        assertThat(foundBook.isPresent()).isTrue(); // espera um livro na resposta da consulta
+        assertThat(foundBook.get().getId()).isEqualTo(id); // o id do Livro deve ser igual ao id do livro recuperado na consulta
+        assertThat(foundBook.get().getIsbn()).isEqualTo(book.getIsbn()); // o isbn do Livro deve ser igual ao isbn do livro recuperado na consulta
+        assertThat(foundBook.get().getAuthor()).isEqualTo(book.getAuthor()); // o Author do Livro deve ser igual ao Author do livro recuperado na consulta
+        assertThat(foundBook.get().getTitle()).isEqualTo(book.getTitle()); // o Title do Livro deve ser igual ao Title do livro recuperado na consulta
+    }
+
+    @Test
+    @DisplayName("Deve retornar vazio quando o id do livro passado não existir na base de dados")
+    public void bookNotFoundByIdTest() {
+        //CENARIO
+        Long id = 1l;
+        Mockito.when(repository.findById(id)).thenReturn(Optional.empty()); // simula uma pesquisa ao banco de Dados e retorna vazio
+
+        //EXECUÇÃO
+        Optional<Book> book = service.getById(id);
+
+        //VERIFICAÇÃO
+        assertThat(book.isPresent()).isFalse(); // não espera um livro na resposta da consulta
+
+    }
 }
