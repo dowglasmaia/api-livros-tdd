@@ -1,5 +1,6 @@
 package org.maia.livro.resource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -177,6 +178,47 @@ public class BookControllerTest {
         //execução
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .delete(BOOK_API.concat("/"+1))
+                .accept(MediaType.APPLICATION_JSON);
+
+        //verificação
+        mvc.perform(request).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um livro")
+    public void updateBookTest() throws Exception {
+        //cenario
+        Long id =1l;
+        String json = new ObjectMapper().writeValueAsString(createNewBook());
+        Book bookUpdate = Book.builder().title("Deus é Fiel").author("Maia").isbn("D-87B").build();
+        BDDMockito.given( services.getById(id) )
+                .willReturn(Optional.of(bookUpdate) );
+        BDDMockito.given( services.update(bookUpdate)).willReturn(Book.builder().id(1l).author("Dowglas Maia").title("Game of Thrones Vol 05").isbn("Vol 5 03º Ed").build());
+
+        //execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(BOOK_API.concat("/" +1))
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(id) )
+                .andExpect(jsonPath("title").value(createNewBook().getTitle()) )
+                .andExpect(jsonPath("author").value(createNewBook().getAuthor()) )
+                .andExpect(jsonPath("isbn").value(createNewBook().getIsbn()));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 404 quando tentar atualizar um livro inexistente")
+    public void updateInexistenteBookTest() throws Exception {
+      BDDMockito.given( services.getById(Mockito.anyLong()) )
+                .willReturn(Optional.empty() );
+
+        //execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" +1))
                 .accept(MediaType.APPLICATION_JSON);
 
         //verificação
