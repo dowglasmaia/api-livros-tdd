@@ -34,12 +34,18 @@ public class BookServicesImpl implements BookServices {
 
     @Override
     public void delete(Book book) {
+        if (book == null || book.getId() == null) {
+            throw new IllegalArgumentException("Book id cant be bull");
+        }
         repository.delete(book);
     }
 
     @Override
     public Book update(Book book) {
-        return null;
+        if (book == null || book.getId() == null) {
+            throw new IllegalArgumentException("Book id cant be bull");
+        }
+       return this.repository.save(book);
     }
 
 }

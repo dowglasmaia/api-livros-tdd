@@ -112,4 +112,38 @@ public class BookServiceTest {
         assertThat(book.isPresent()).isFalse(); // não espera um livro na resposta da consulta
 
     }
+
+    @Test
+    @DisplayName("Deve detelar um Livro")
+    public void deleteBookTest() {
+        //cenario
+        Long id = 1l;
+        Book book = createBook();
+        book.setId(id);
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(book)); // retonar um Livro criado
+
+        //execução
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> service.delete(book)); // verifica que não lançou nenhuma Exceção ao deletar o livro
+
+        //verificação
+        Mockito.verify(repository, Mockito.times(1)).delete(book); // verifica que o metodo delete foi chamado 1x
+    }
+
+
+    @Test
+    @DisplayName("Deve lançar error ao tentar deletar um livro inexistente")
+    public void deleteInvalidBookTest() {
+        //cenario
+        Book book = new Book(); // cria um libro vazio
+
+        //execução
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> service.delete(book)); // deve lançar esta exception ao chamar o delete()
+
+        //verificação
+        Mockito.verify(repository, Mockito.never()).delete(book); // verifica que o metodo delete(), nunca foi chamado
+
+
+    }
+
+
 }
