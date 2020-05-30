@@ -141,9 +141,41 @@ public class BookServiceTest {
 
         //verificação
         Mockito.verify(repository, Mockito.never()).delete(book); // verifica que o metodo delete(), nunca foi chamado
-
-
     }
 
+    @Test
+    @DisplayName("Deve lançar error ao tentar atualizar um livro inexistente")
+    public void updateInvalidBookTest() {
+        //cenario
+        Book book = new Book(); // cria um libro vazio
+
+        //execução
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> service.update(book)); // deve lançar esta exception ao chamar o update()
+
+        //verificação
+        Mockito.verify(repository, Mockito.never()).save(book); // verifica que o metodo save(), nunca foi chamado
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um livro inexistente")
+    public void updateBookTest() {
+        //cenario
+        //livro a ser atualizado
+        Book updatingBook = Book.builder().id(1l).build();
+
+        //simulação update
+        Book updatedBook = createBook();
+        updatedBook.setId(1l);
+        Mockito.when( repository.save(updatingBook)).thenReturn(updatedBook); // retorna o livro atualizado
+
+        //execução
+        Book book = service.update(updatingBook);
+
+        //verificação  - compara o retorno com o livro atualizado.
+        assertThat(book.getId()).isEqualTo(updatedBook.getId());
+        assertThat(book.getTitle()).isEqualTo(updatedBook.getTitle());
+        assertThat(book.getIsbn()).isEqualTo(updatedBook.getIsbn());
+        assertThat(book.getAuthor()).isEqualTo(updatedBook.getAuthor());
+    }
 
 }
