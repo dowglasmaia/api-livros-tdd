@@ -157,7 +157,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar um livro inexistente")
+    @DisplayName("Deve atualizar um livro ")
     public void updateBookTest() {
         //cenario
         //livro a ser atualizado
