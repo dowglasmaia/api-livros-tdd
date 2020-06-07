@@ -11,9 +11,15 @@ import org.maia.livro.repository.BookRepository;
 import org.maia.livro.services.impl.BookServicesImpl;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -176,6 +182,28 @@ public class BookServiceTest {
         assertThat(book.getTitle()).isEqualTo(updatedBook.getTitle());
         assertThat(book.getIsbn()).isEqualTo(updatedBook.getIsbn());
         assertThat(book.getAuthor()).isEqualTo(updatedBook.getAuthor());
+    }
+
+    @Test
+    @DisplayName("Deve filtrar livros pelas propiedades")
+    public void finsBookTest(){
+        //cenario
+        Book book = createBook();
+        List<Book>  lista=  Arrays.asList(book); // cria uma lista de book
+        PageRequest pageRequest = PageRequest.of(0,10); // pagina 'ZERO' com no maximo 'DEZ' elementos
+        Page<Book> page = new PageImpl<Book>(lista, pageRequest , 1); // populando a pagina com 01(UM) Elemento
+        Mockito.when( repository.findAll(Mockito.any(Example.class), Mockito.any(PageRequest.class)))
+                .thenReturn(page);
+
+        //execução
+        Page<Book> pageResult = service.find(book, pageRequest);
+
+        //verificação da resposta esperada.
+        assertThat(pageResult.getTotalElements()).isEqualTo(1);
+        assertThat(pageResult.getContent()).isEqualTo(lista);
+        assertThat(pageResult.getPageable().getPageNumber()).isEqualTo(0);
+        assertThat(pageResult.getPageable().getPageSize()).isEqualTo(10);
+
     }
 
 }
