@@ -1,7 +1,9 @@
 package org.maia.livro.resource;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,15 +49,15 @@ public class LoanControllerTest {
     private LoanServices loanService;
 
     @Test
-    @DisplayName("Deve realizar em emprestimo de livro")
+    @DisplayName("Deve realizar um emprestimo de livro")
     public void createLoanTest()throws Exception {
-        /* ============ CENARIO ============= */
+        /* ============ CENÁRIO ============= */
         LoanDTO dto = LoanDTO.builder().isbn("123").costumer("Kayron").build();
         String json = new ObjectMapper().writeValueAsString(dto);
 
         Book book = Book.builder().id(1L).isbn("123").build() ;
 
-        /* Simulando um retorna que estaria na Base de Dados*/
+        /* Simulando um retorno que estaria na Base de Dados*/
         BDDMockito.given( bookService.getBookByIsbn("123") ).willReturn(Optional.of(book) );
 
         /* Simulando um insert na Base de Dados*/
@@ -68,11 +70,35 @@ public class LoanControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
 
-        /*  Verificação - dos Dados Esperados - no Responde da Requisição */
+        /*  Verificação - dos Dados Esperados - no Response da Requisição */
         mvc.perform( request )
                 .andExpect(status().isCreated() )
                // .andExpect( jsonPath("id").value(1l) );
                 .andExpect(content().string("1")); /* quando quero validar o retorno do id , usar o content */
+    }
+
+    @Test
+    @DisplayName("Deve retornar error ao tentar fazer emprestimo de um livro inexistente")
+    public void invalidIsbnCreateLoanTest() throws Exception {
+        /* ============ CENÁRIO ============= */
+        LoanDTO dto = LoanDTO.builder().isbn("123").costumer("Kayron").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        /* Simulando um retorno que estaria na Base de Dados - neste caso vai retorna vazio*/
+        BDDMockito.given( bookService.getBookByIsbn("123") ).willReturn(Optional.empty() );
+
+        /* Fazendo a requisição */
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(LOAN_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        /*  Verificação - dos Dados Esperados - no Response da Requisição */
+        mvc.perform( request )
+                .andExpect(status().isBadRequest() )
+                .andExpect( jsonPath("errors", Matchers.hasSize(1)) ) // espera ( 01 )um error
+                .andExpect(jsonPath("errors[0]").value("Book not found for passed isbn") ); // msg de error esperada.
+
 
     }
 

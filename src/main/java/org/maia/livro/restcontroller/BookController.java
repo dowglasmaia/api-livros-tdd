@@ -83,18 +83,5 @@ public class BookController {
     }
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handlerValidationException(MethodArgumentNotValidException ex) {
-        BindingResult result = ex.getBindingResult();
-        return new ApiErrors(result);
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handlerBusinessException(BusinessException ex) {
-        return new ApiErrors(ex);
-
-    }
 
 }
