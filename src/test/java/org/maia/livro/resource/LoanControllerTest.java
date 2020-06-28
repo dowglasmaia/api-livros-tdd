@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanDTO;
+import org.maia.livro.exception.BusinessException;
 import org.maia.livro.restcontroller.LoanController;
 import org.maia.livro.services.interfaces.LoanServices;
 import org.maia.livro.services.interfaces.BookServices;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class LoanControllerTest {
 
-    static final String LOAN_API =  "/api/loans";
+    static final String LOAN_API = "/api/loans";
 
     @Autowired
     MockMvc mvc;
@@ -50,19 +51,19 @@ public class LoanControllerTest {
 
     @Test
     @DisplayName("Deve realizar um emprestimo de livro")
-    public void createLoanTest()throws Exception {
+    public void createLoanTest() throws Exception {
         /* ============ CENÁRIO ============= */
         LoanDTO dto = LoanDTO.builder().isbn("123").costumer("Kayron").build();
         String json = new ObjectMapper().writeValueAsString(dto);
 
-        Book book = Book.builder().id(1L).isbn("123").build() ;
+        Book book = Book.builder().id(1L).isbn("123").build();
 
         /* Simulando um retorno que estaria na Base de Dados*/
-        BDDMockito.given( bookService.getBookByIsbn("123") ).willReturn(Optional.of(book) );
+        BDDMockito.given(bookService.getBookByIsbn("123")).willReturn(Optional.of(book));
 
         /* Simulando um insert na Base de Dados*/
         Loan loan = Loan.builder().id(1L).costumer("Kayron").book(book).loanDate(LocalDate.now()).returned(false).build();
-        BDDMockito.given(loanService.save(Mockito.any(Loan.class) )).willReturn(loan);
+        BDDMockito.given(loanService.save(Mockito.any(Loan.class))).willReturn(loan);
 
         /* Fazendo a requisição */
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(LOAN_API)
@@ -71,9 +72,9 @@ public class LoanControllerTest {
                 .content(json);
 
         /*  Verificação - dos Dados Esperados - no Response da Requisição */
-        mvc.perform( request )
-                .andExpect(status().isCreated() )
-               // .andExpect( jsonPath("id").value(1l) );
+        mvc.perform(request)
+                .andExpect(status().isCreated())
+                // .andExpect( jsonPath("id").value(1l) );
                 .andExpect(content().string("1")); /* quando quero validar o retorno do id , usar o content */
     }
 
@@ -85,7 +86,7 @@ public class LoanControllerTest {
         String json = new ObjectMapper().writeValueAsString(dto);
 
         /* Simulando um retorno que estaria na Base de Dados - neste caso vai retorna vazio*/
-        BDDMockito.given( bookService.getBookByIsbn("123") ).willReturn(Optional.empty() );
+        BDDMockito.given(bookService.getBookByIsbn("123")).willReturn(Optional.empty());
 
         /* Fazendo a requisição */
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(LOAN_API)
@@ -94,12 +95,39 @@ public class LoanControllerTest {
                 .content(json);
 
         /*  Verificação - dos Dados Esperados - no Response da Requisição */
-        mvc.perform( request )
-                .andExpect(status().isBadRequest() )
-                .andExpect( jsonPath("errors", Matchers.hasSize(1)) ) // espera ( 01 )um error
-                .andExpect(jsonPath("errors[0]").value("Book not found for passed isbn") ); // msg de error esperada.
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", Matchers.hasSize(1))) // espera ( 01 )um error
+                .andExpect(jsonPath("errors[0]").value("Book not found for passed isbn")); // msg de error esperada.
+    }
 
+    @Test
+    @DisplayName("Deve retornar error ao tentar fazer emprestimo de um livro indisponível")
+    public void loanedBookErrorOnCreateLoanTest() throws Exception {
+        /* ============ CENÁRIO ============= */
+        LoanDTO dto = LoanDTO.builder().isbn("123").costumer("Kayron").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
 
+        /* Criando um Livro*/
+        Book book = Book.builder().id(1L).isbn("123").build();
+
+        /* Simulando um retorno que estaria na Base de Dados */
+        BDDMockito.given(bookService.getBookByIsbn("123")).willReturn(Optional.of(book));
+        BDDMockito.given(loanService.save(Mockito.any(Loan.class)) ).willThrow(
+                new BusinessException("Book currently unavailable")
+        );
+
+        /* Fazendo a requisição */
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(LOAN_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        /*  Verificação - dos Dados Esperados - no Response da Requisição */
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", Matchers.hasSize(1))) // espera ( 01 )um error
+                .andExpect(jsonPath("errors[0]").value("Book currently unavailable")); // msg de error esperada.
     }
 
 
