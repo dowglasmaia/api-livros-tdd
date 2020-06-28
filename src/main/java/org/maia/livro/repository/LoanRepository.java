@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
 
+    boolean existsByBookAndNotReturned(Book book);
 }
