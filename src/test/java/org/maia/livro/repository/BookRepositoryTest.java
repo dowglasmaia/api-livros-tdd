@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.services.impl.BookServicesImpl;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -16,6 +17,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Optional;
+
+/*
+* Testes de Integração
+* */
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -27,9 +32,6 @@ public class BookRepositoryTest {
 
     @Autowired
     private BookRepository repository;
-
-    @Autowired
-    private BookServicesImpl services;
 
     private Book createBook() {
         return Book.builder().title("Aventuras").author("Kayron").isbn("123").build();
@@ -63,5 +65,43 @@ public class BookRepositoryTest {
         Assertions.assertThat(exists).isFalse();
     }
 
+    @Test
+    @DisplayName("Deve obter um livro por id")
+    public void findByIdTest(){
+        //cenario
+        Book book = createBook(); // cria um livro populado
+        entityManager.persist(book); // simula um insert na banco
+
+        //execução
+        Optional<Book> foundBook = repository.findById(book.getId()); // retorna o livro persistido
+
+        //verificação
+        Assertions.assertThat(foundBook.isPresent()).isTrue();  //espera um livro na resposta
+    }
+
+    @Test
+    @DisplayName("Deve salvar um livro")
+    public void saveBookTest(){
+        Book book = createBook();  // cria o livro populado
+
+        Book savedBook = repository.save(book); // salva o livro
+
+        Assertions.assertThat(savedBook.getId() ).isNotNull();  // verifica se o livro salvar estar com ID
+    }
+
+    @Test
+    @DisplayName("Deve deletar um livro")
+    public void deleteBookTest(){
+        Book book= createBook();
+        entityManager.persist(book); // grava o livro na base de dados
+
+        Book foundBook = entityManager.find(Book.class, book.getId() ); // busca o livro na base de ados
+        Assertions.assertThat(foundBook).isNotNull(); //verifica que o retorno do livro não estar nulo
+
+        repository.delete(foundBook); // deleta o livro da base dados
+
+        Book deletedBook = entityManager.find(Book.class, book.getId()); // livro deletado - deve retorna nulo
+        Assertions.assertThat(deletedBook).isNull(); // verifica que o retorna e nulo.
+    }
 
 }

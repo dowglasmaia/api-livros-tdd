@@ -9,13 +9,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.dtos.BookDTO;
 import org.maia.livro.exception.BusinessException;
+import org.maia.livro.restcontroller.BookController;
 import org.maia.livro.services.impl.BookServicesImpl;
 import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,13 +29,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest
+@WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
 public class BookControllerTest {
 
@@ -223,6 +229,30 @@ public class BookControllerTest {
 
         //verificação
         mvc.perform(request).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve filtar livros , com retorno de paginação")
+    public void findBooksTest() throws Exception {
+        //cenario
+        Long id = 1l;
+        Book book = Book.builder().id(id).title(createNewBook().getTitle()).author(createNewBook().getAuthor()).isbn(createNewBook().getIsbn()).build();
+
+        BDDMockito.given( services.find(Mockito.any(Book.class), Mockito.any(Pageable.class)) )
+                .willReturn( new PageImpl<Book>(Arrays.asList(book), PageRequest.of(0, 100), 1) ); // pagina ZERO com 100 NO MAXIMO REGISTRO e ESPERO 1 NO RESTORN.
+
+        String queryString = String.format("?title=%s&author=%s&page=0&size=100", book.getTitle(), book.getAuthor() );
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BOOK_API.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(status().isOk()) // epero resultados sem errors
+                .andExpect(jsonPath( "content", Matchers.hasSize(1))) //espero que o conteudo possua apenas  01 elemento
+                .andExpect(jsonPath("totalElements").value(1))// espero um total de elementos 01
+                .andExpect(jsonPath("pageable.pageSize").value(100)) // espero o tamanho da pagina com no max 100 registros
+                .andExpect(jsonPath("pageable.pageNumber").value(0)); // espero a pagina 0
     }
 
 }
