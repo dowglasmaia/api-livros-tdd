@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanDTO;
+import org.maia.livro.dtos.ReturnedLoadDTO;
 import org.maia.livro.exception.ObjectNotFoundException;
 import org.maia.livro.services.interfaces.BookServices;
 import org.maia.livro.services.interfaces.LoanServices;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -38,5 +40,16 @@ public class LoanController {
         return newEntity.getId();
     }
 
+    //@GetMapping("/{id}")
+    @PatchMapping("/{id}")
+    public void returnedBook(
+            @PathVariable Long id,
+            @RequestBody ReturnedLoadDTO dto){
+
+        Loan loan =  loanServices.getById(id).get();
+        loan.setReturned(dto.getReturned());
+
+        loanServices.update(loan);
+    }
 
 }

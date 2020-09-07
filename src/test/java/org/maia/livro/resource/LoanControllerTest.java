@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanDTO;
+import org.maia.livro.dtos.ReturnedLoadDTO;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.restcontroller.LoanController;
 import org.maia.livro.services.interfaces.LoanServices;
@@ -30,6 +31,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -130,5 +133,28 @@ public class LoanControllerTest {
                 .andExpect(jsonPath("errors[0]").value("Book currently unavailable")); // msg de error esperada.
     }
 
+    @Test
+    @DisplayName("Deve retornar um livro")
+    public void returnBookTest() throws Exception {
+
+        //CENARIO
+        ReturnedLoadDTO dto = ReturnedLoadDTO.builder().returned(true).build();
+        Loan loan = Loan.builder().id(1L).build();
+        BDDMockito.given(loanService.getById(Mockito.anyLong())).willReturn(
+                Optional.of(loan)
+        );
+
+        String json  = new ObjectMapper().writeValueAsString(dto);
+
+        mvc.perform(
+                patch(LOAN_API.concat("/1"))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        ).andExpect( status().isOk() );
+
+        //VEIFICANDO SE PASSOU PELO UPDATE PELO MENOS 1 VEZ
+        Mockito.verify(loanService, Mockito.times(1)).update(loan);
+    }
 
 }

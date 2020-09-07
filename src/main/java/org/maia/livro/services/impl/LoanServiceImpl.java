@@ -6,6 +6,8 @@ import org.maia.livro.repository.LoanRepository;
 import org.maia.livro.services.interfaces.LoanServices;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LoanServiceImpl implements LoanServices {
 
@@ -24,5 +26,15 @@ public class LoanServiceImpl implements LoanServices {
         }
 
         return repository.save(loan);
+    }
+
+    @Override
+    public Optional<Loan> getById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Loan update(Loan loan) {
+        return null;
     }
 }
