@@ -33,7 +33,7 @@ public class BookRepositoryTest {
     @Autowired
     private BookRepository repository;
 
-    private Book createBook() {
+    public static Book createBook() {
         return Book.builder().title("Aventuras").author("Kayron").isbn("123").build();
     }
 
