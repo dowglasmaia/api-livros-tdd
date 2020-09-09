@@ -41,7 +41,7 @@ public class BookServiceTest {
     }
 
 
-    private Book createBook() {
+    public static Book createBook() {
         return Book.builder().isbn("123").author("kayron").title("T2").build();
     }
 

@@ -1,6 +1,9 @@
 package org.maia.livro.services.interfaces;
 
 import org.maia.livro.domain.Loan;
+import org.maia.livro.dtos.LoanFilterDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,4 +19,6 @@ public interface LoanServices {
 
     @Transactional
     Loan update(Loan loan);
+
+    Page<Loan> find(LoanFilterDTO filterDTO, Pageable page);
 }

@@ -10,9 +10,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanDTO;
+import org.maia.livro.dtos.LoanFilterDTO;
 import org.maia.livro.dtos.ReturnedLoadDTO;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.restcontroller.LoanController;
+import org.maia.livro.services.LoanServiceTest;
 import org.maia.livro.services.interfaces.LoanServices;
 import org.maia.livro.services.interfaces.BookServices;
 import org.mockito.BDDMockito;
@@ -21,6 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -29,6 +34,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
@@ -171,6 +177,34 @@ public class LoanControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
         ).andExpect( status().isNotFound() );
+    }
+
+    @Test
+    @DisplayName("Deve filtar Emprestimos , com retorno de paginação")
+    public void findLoanTest() throws Exception {
+        //cenario
+        Long id = 1l;
+        Loan loan = LoanServiceTest.createLoan();
+        loan.setId(id);
+
+        BDDMockito.given( loanService.find(Mockito.any(LoanFilterDTO.class), Mockito.any(Pageable.class)) )
+                .willReturn( new PageImpl<Loan>(Arrays.asList(loan),
+                        PageRequest.of(0, 10), 1) ); // pagina ZERO com 10 NO MAXIMO REGISTRO e ESPERO 1 NO RESTORN.
+
+        String queryString = String.format("?isbn=%s&costumer=%s&page=0&size=10",
+                loan.getBook().getIsbn(),
+                loan.getCostumer() );
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(LOAN_API.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(status().isOk())                                                     // epero resultados sem errors
+                .andExpect(jsonPath( "content", Matchers.hasSize(1)))                //espero que o conteudo possua apenas  01 elemento
+                .andExpect(jsonPath("totalElements").value(1))          // espero um total de elementos 01
+                .andExpect(jsonPath("pageable.pageSize").value(10))    // espero o tamanho da pagina com no max 100 registros
+                .andExpect(jsonPath("pageable.pageNumber").value(0));   // espero a pagina 0
     }
 
 }
