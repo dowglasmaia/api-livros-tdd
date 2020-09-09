@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
+import org.maia.livro.dtos.LoanDTO;
+import org.maia.livro.dtos.LoanFilterDTO;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.repository.LoanRepository;
 import org.maia.livro.services.impl.BookServicesImpl;
@@ -125,7 +127,33 @@ public class LoanServiceTest {
         verify(repository).save(loan);
     }
 
+    @Test
+    @DisplayName("Deve filtrar emprestimo pelas propiedades")
+    public void filterLoanTest() {
+        //cenario
+        LoanFilterDTO loanDTO = LoanFilterDTO.builder().costumer("Kayron").isbn("abc").build();
+        Loan loan = createLoan();
+        loan.setId(1l);
+        List<Loan>  lista=  Arrays.asList(loan);
+        PageRequest pageRequest = PageRequest.of(0,10);
 
+        Page<Loan> page = new PageImpl<Loan>(lista, pageRequest , lista.size());
+
+        when( repository.findByBookIsbnOrCustomer(
+                Mockito.anyString(),
+                Mockito.anyString(),
+                Mockito.any(PageRequest.class)))
+                .thenReturn(page);
+
+        //execução
+        Page<Loan> pageResult = service.find(loanDTO, pageRequest);
+
+        //verificação da resposta esperada.
+        assertThat(pageResult.getTotalElements()).isEqualTo(1);
+        assertThat(pageResult.getContent()).isEqualTo(lista);
+        assertThat(pageResult.getPageable().getPageNumber()).isEqualTo(0);
+        assertThat(pageResult.getPageable().getPageSize()).isEqualTo(10);
+    }
 
 
     public static Loan createLoan(){
