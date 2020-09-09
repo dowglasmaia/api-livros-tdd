@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -40,21 +41,12 @@ public class LoanServiceTest {
     @DisplayName("Deve salvar um imprestimo")
     public void saveLoanTest() {
         //cenario
-        Book book = Book.builder().id(1l).build();
-        String costumer = "Kayron Maia";
-        /* Criando um Emprestimo para ser salvo - que seria passado na requisição*/
-        Loan savinLoan = Loan.builder()
-                .book(book)
-                .costumer(costumer)
-                .loanDate(LocalDate.now())
-                .build();
+        Loan savinLoan = this.createLoan();
 
-        when(repository.existsByBookAndNotReturned(book)).thenReturn(false);
+        when(repository.existsByBookAndNotReturned( this.createLoan().getBook() )).thenReturn(false);
         /* emprestimo salvo - que sera retornado apos a chamada do metodo save */
-        Loan loanSaved = Loan.builder().id(1l)
-                .book(book)
-                .costumer(costumer)
-                .loanDate(LocalDate.now()).build();
+        Loan loanSaved = this.createLoan();
+        loanSaved.setId(1l);
 
         /* Simulando o salvar e retornando um imprestimo salvo */
         when(repository.save(savinLoan)).thenReturn(loanSaved);
@@ -72,18 +64,10 @@ public class LoanServiceTest {
     @DisplayName("Deve lançar error de negocio ao tentar salvar um imprestimo com livro indisponível. ")
     public void loandBookSaveTest() {
         //cenario
-        Book book = Book.builder().id(1l).build();
-        String costumer = "Kayron Maia";
-
-        /* Criando um Emprestimo para ser salvo - que seria passado na requisição*/
-        Loan savinLoan = Loan.builder()
-                .book(book)
-                .costumer(costumer)
-                .loanDate(LocalDate.now())
-                .build();
+        Loan savinLoan = this.createLoan();
 
         // setando o valor verdadeiro para o empretimo do livro.
-        when(repository.existsByBookAndNotReturned(book)).thenReturn(true);
+        when(repository.existsByBookAndNotReturned( this.createLoan().getBook() )).thenReturn(true);
 
         /* lança exception*/
         Throwable exception = catchThrowable(() -> service.save(savinLoan));
@@ -93,6 +77,41 @@ public class LoanServiceTest {
                 .hasMessage("Book currently unavailable");
 
         verify(repository, never()).save(savinLoan);  // verifica que o metodo save do repository não foi chamado
+    }
+
+    @Test
+    @DisplayName("Deve obter as informações de um emprestimo pelo ID")
+    public void getLoanDetailsTest(){
+        // CENARIO
+        Long id = 1l;
+        Loan loan = createLoan();
+        loan.setId(id);
+
+        Mockito.when( repository.findById(id) ).thenReturn(Optional.of( loan )); //simula o retorn de Loan
+
+        //EXECUÇÃO
+        Optional<Loan> result = service.getById(id);
+
+        //VERIFICAÇÃO
+        assertThat( result.isPresent() ).isTrue();
+        assertThat( result.get().getId() ).isEqualTo( id );
+        assertThat( result.get().getCostumer() ).isEqualTo( loan.getCostumer() );
+        assertThat( result.get().getBook() ).isEqualTo( loan.getBook());
+        assertThat( result.get().getReturned() ).isEqualTo( loan.getReturned() );
+        assertThat( result.get().getLoanDate() ).isEqualTo( loan.getLoanDate() );
+
+        verify(repository, times(1) ).findById(id); // verifica se o metodo findById foi chamado ao menos UMA vez.
 
     }
+
+    private Loan createLoan(){
+        Book book = Book.builder().id(1l).build();
+        String costumer = "Kayron Maia";
+        return  Loan.builder()
+                .book(book)
+                .costumer(costumer)
+                .loanDate(LocalDate.now())
+                .build();
+    }
+
 }
