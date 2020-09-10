@@ -8,6 +8,7 @@ import org.maia.livro.domain.Book;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @Builder
@@ -16,8 +17,12 @@ import javax.persistence.Id;
 public class LoanDTO {
 
     private Long id;
-    private  String isbn;
+    @NotEmpty
+    private String isbn;
+    @NotEmpty
     private String costumer;
+    @NotEmpty
+    private String costumerEmail;
     private BookDTO book;
 
 }

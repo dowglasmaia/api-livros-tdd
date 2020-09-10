@@ -34,4 +34,7 @@ public class Loan implements Serializable {
 
     @Column
     private Boolean returned;
+
+    @Column(name = "costumer_email",length = 50)
+    private String costumerEmail;
 }

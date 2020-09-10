@@ -8,20 +8,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public interface LoanServices {
+public interface LoanServices extends Serializable {
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     Loan save(Loan loan);
 
-   Optional<Loan> getById(Long id);
+    @Transactional(readOnly = true)
+    Optional<Loan> getById(Long id);
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     Loan update(Loan loan);
 
+    @Transactional(readOnly = true)
     Page<Loan> find(LoanFilterDTO filterDTO, Pageable page);
 
+    @Transactional(readOnly = true)
     Page<Loan> getLoansByBook(Book book, Pageable pageable);
+
+    @Transactional(readOnly = true)
+    List<Loan>getAllLateLoans();
+
 }
