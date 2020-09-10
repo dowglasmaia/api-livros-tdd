@@ -1,5 +1,6 @@
 package org.maia.livro.services.interfaces;
 
+import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanFilterDTO;
 import org.springframework.data.domain.Page;
@@ -21,4 +22,6 @@ public interface LoanServices {
     Loan update(Loan loan);
 
     Page<Loan> find(LoanFilterDTO filterDTO, Pageable page);
+
+    Page<Loan> getLoansByBook(Book book, Pageable pageable);
 }
