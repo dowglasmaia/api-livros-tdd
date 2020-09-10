@@ -1,5 +1,6 @@
 package org.maia.livro.services.impl;
 
+import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanFilterDTO;
 import org.maia.livro.exception.BusinessException;
@@ -44,5 +45,10 @@ public class LoanServiceImpl implements LoanServices {
     @Override
     public Page<Loan> find(LoanFilterDTO loan, Pageable page) {
         return repository.findByBookIsbnOrCustomer(loan.getIsbn(),loan.getCostumer(),page);
+    }
+
+    @Override
+    public Page<Loan> getLoansByBook(Book book, Pageable pageable) {
+        return repository.findByBook(book,pageable);
     }
 }
