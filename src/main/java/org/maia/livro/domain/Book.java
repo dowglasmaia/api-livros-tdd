@@ -9,6 +9,8 @@ import org.hibernate.annotations.GeneratorType;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -31,6 +33,9 @@ public class Book implements Serializable {
 
     @Column
     private String isbn;
+
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    private Set<Loan> loans = new HashSet<>();
 }
 
 
