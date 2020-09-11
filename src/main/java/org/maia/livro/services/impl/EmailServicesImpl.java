@@ -17,6 +17,7 @@ public class EmailServicesImpl implements EmailServices {
     @Value("${application.mail.default-remetente}")
     private String remetent;
 
+    @Autowired
     private final JavaMailSender javaMailSender;
 
     @Override
@@ -25,9 +26,9 @@ public class EmailServicesImpl implements EmailServices {
         String [] mails = emailList.toArray( new String[ emailList.size() ] ); // convert a lista para um Array
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(remetent); //Remetente
+        mailMessage.setFrom(remetent);                           //Remetente
         mailMessage.setSubject("Livro com empréstimo atrasado"); // assunto
-        mailMessage.setText(messagem); // messagem do email
-        mailMessage.setTo(mails); // Array com Lista de email  - Destinatarios
+        mailMessage.setText(messagem);                           // messagem do email
+        mailMessage.setTo(mails);                                // Array com Lista de email  - Destinatarios
     }
 }

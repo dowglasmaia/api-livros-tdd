@@ -1,5 +1,6 @@
 package org.maia.livro.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanFilterDTO;
@@ -16,11 +17,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class LoanServiceImpl implements LoanServices {
 
     private LoanRepository repository;
-
-    public LoanServiceImpl (){   }
 
     public LoanServiceImpl (LoanRepository repository){
         this.repository = repository;
