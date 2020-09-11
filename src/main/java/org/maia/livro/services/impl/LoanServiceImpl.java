@@ -19,7 +19,9 @@ public class LoanServiceImpl implements LoanServices {
 
     private LoanRepository repository;
 
-    public LoanServiceImpl (LoanRepository repository){
+    public LoanServiceImpl (
+            LoanRepository repository
+    ){
         this.repository = repository;
     }
 
