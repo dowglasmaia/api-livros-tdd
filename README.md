@@ -13,3 +13,7 @@
 
 * Criando Cronograma para agendamentos de tarefas 
 * http://www.cronmaker.com/?1
+
+* https://mailtrap.io/3
+
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#core-properties
