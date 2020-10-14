@@ -14,6 +14,13 @@
 * Criando Cronograma para agendamentos de tarefas 
 * http://www.cronmaker.com/?1
 
-* https://mailtrap.io/3
+* https://mailtrap.io/
+
+* https://localhost:8080/swagger-ui.html
 
 * https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#core-properties
+
+*https://codecentric.github.io/spring-boot-admin/1.5.0/#_what_is_spring_boot_admin
+
+## Endpoint para obter endpoints para monitoramento
+**http://localhost:8080/actuator

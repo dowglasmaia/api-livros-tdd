@@ -1,18 +1,20 @@
 package org.maia.livro.services.impl;
 
+import java.util.Optional;
+
 import org.maia.livro.domain.Book;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.repository.BookRepository;
 import org.maia.livro.services.interfaces.BookServices;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j	
 @Service
 public class BookServicesImpl implements BookServices {
 
@@ -55,6 +57,7 @@ public class BookServicesImpl implements BookServices {
 
     @Override
     public Page<Book> find(Book filter, Pageable pages) {
+    	log.info("Listando Todos os Livros pelo Services!");
         Example<Book> example = Example.of(filter, ExampleMatcher
                 .matching()
                 .withIgnoreCase()

@@ -1,31 +1,35 @@
 package org.maia.livro.restcontroller;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
 import org.maia.livro.domain.Book;
-import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.BookDTO;
-import org.maia.livro.dtos.LoanDTO;
-import org.maia.livro.exception.ApiErrors;
-import org.maia.livro.exception.BusinessException;
-import org.maia.livro.services.impl.BookServicesImpl;
 import org.maia.livro.services.interfaces.BookServices;
-import org.maia.livro.services.interfaces.LoanServices;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
@@ -42,9 +46,13 @@ public class BookController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookDTO create(@RequestBody @Valid BookDTO dto) {
+    	log.info("Iniciando Criação de um novo Livro!");
         Book entity = modelMapper.map(dto, Book.class);
         entity = service.save(entity);
-        return modelMapper.map(entity, BookDTO.class);
+        
+        BookDTO obj = modelMapper.map(entity, BookDTO.class);
+        log.info("Livro criado com sucesso" );
+        return obj;
     }
 
     @GetMapping("/{id}")
@@ -78,6 +86,8 @@ public class BookController {
 
     @GetMapping
     public Page<BookDTO> find(BookDTO dto, Pageable pagRequest) {
+    	
+    	
         Book filter = modelMapper.map(dto, Book.class); //coverte o BookDTO para um Book
         Page<Book> result = service.find(filter, pagRequest);
 
