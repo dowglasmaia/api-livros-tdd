@@ -20,7 +20,8 @@
 
 * https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#core-properties
 
-*https://codecentric.github.io/spring-boot-admin/1.5.0/#_what_is_spring_boot_admin
+* https://codecentric.github.io/spring-boot-admin/1.5.0/#_what_is_spring_boot_admin
+* https://github.com/codecentric/spring-boot-admin
 
 ## Endpoint para obter endpoints para monitoramento
 **http://localhost:8080/actuator
