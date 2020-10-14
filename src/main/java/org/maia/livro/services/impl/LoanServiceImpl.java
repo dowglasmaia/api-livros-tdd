@@ -1,5 +1,7 @@
 package org.maia.livro.services.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanFilterDTO;
@@ -9,12 +11,14 @@ import org.maia.livro.services.interfaces.LoanServices;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class LoanServiceImpl implements LoanServices {
 
     private LoanRepository repository;
