@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.maia.livro.domain.Book;
-import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.BookDTO;
 import org.maia.livro.services.interfaces.BookServices;
 import org.modelmapper.ModelMapper;
@@ -33,12 +32,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/books")
-@RequiredArgsConstructor
+@RequiredArgsConstructor  //para o spring fazer a injeção dos servicos -  pelo lombok
 public class BookController {
 
 
-   // private final LoanServices loanServices;
-    private final BookServices service;
+   private final BookServices service;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -83,11 +81,9 @@ public class BookController {
             return modelMapper.map(book, BookDTO.class);
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
-
-
+    
     @GetMapping
-    public Page<BookDTO> find(BookDTO dto, Pageable pagRequest) {
-    	
+    public Page<BookDTO> find(BookDTO dto, Pageable pagRequest) { 	
     	
         Book filter = modelMapper.map(dto, Book.class); //coverte o BookDTO para um Book
         Page<Book> result = service.find(filter, pagRequest);
@@ -100,7 +96,25 @@ public class BookController {
         return new PageImpl<BookDTO>(list, pagRequest, result.getTotalElements() );
 
     }
-/*
+
+
+   /* @GetMapping
+    public Page<BookDTO>(BookDTO dto, Pageable pagRequest	) {
+    	
+    	
+        Book filter = modelMapper.map(dto, Book.class); //coverte o BookDTO para um Book
+        Page<Book> result = service.find(filter, pagRequest);
+
+        List<BookDTO> list = result.getContent()
+                .stream()
+                .map(entity -> modelMapper.map(entity, BookDTO.class))
+                .collect(Collectors.toList());
+
+        return new PageImpl<BookDTO>(list, pagRequest, result.getTotalElements() );
+
+   
+   
+
     @GetMapping("/{id}/loans")
     public Page<LoanDTO>loansByBook(@PathVariable Long id, Pageable pageable){
         Book book = service.getById(id).orElseThrow(
@@ -119,11 +133,11 @@ public class BookController {
 
         return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
     }
-*/
 
-        return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
-    }
 
+        //return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
+    }*/
+	
 
 
 
