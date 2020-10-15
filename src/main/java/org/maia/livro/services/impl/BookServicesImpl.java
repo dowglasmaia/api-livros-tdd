@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j	
 @Service
-@RequiredArgsConstructor
 public class BookServicesImpl implements BookServices {
 
     private BookRepository repository;
