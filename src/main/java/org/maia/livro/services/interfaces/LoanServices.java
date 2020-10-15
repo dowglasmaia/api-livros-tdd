@@ -13,7 +13,7 @@ import java.util.Optional;
 
 
 @Service
-public interface LoanServices {
+public interface LoanServices extends Serializable {
 
     @Transactional(rollbackFor = Exception.class)
     Loan save(Loan loan);

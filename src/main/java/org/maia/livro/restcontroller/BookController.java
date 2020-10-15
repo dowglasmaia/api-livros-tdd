@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.maia.livro.domain.Book;
+import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.BookDTO;
 import org.maia.livro.services.interfaces.BookServices;
 import org.modelmapper.ModelMapper;
@@ -119,5 +120,12 @@ public class BookController {
         return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
     }
 */
+
+        return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
+    }
+
+
+
+
 
 }

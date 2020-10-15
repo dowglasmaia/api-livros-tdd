@@ -1,5 +1,6 @@
 package org.maia.livro.repository;
 
+import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.maia.livro.repository.BookRepositoryTest.createBook;
@@ -34,8 +36,8 @@ public class LoanRepositoryTest {
     @DisplayName("Deve verificar se existe emprestimo não devolvido para o Livro")
     public void existsByBookAndNotReturned(){
         //cenario
-        Loan loan = this.createAndPersistBookAndLoan();
-        Book book = this.createAndPersistBookAndLoan().getBook();
+        Loan loan = this.createAndPersistBookAndLoan(LocalDate.now());
+        Book book = this.createAndPersistBookAndLoan(LocalDate.now()).getBook();
 
         //execeção
         boolean exists = repository.existsByBookAndNotReturned(book);
@@ -48,7 +50,7 @@ public class LoanRepositoryTest {
     @DisplayName("Deve Buscar Emprestimo por isbn do Livro ou customer")
     public void findByLoanForBookIsbnOrCustomerTeste(){
         //cenario
-        Loan loan = this.createAndPersistBookAndLoan();
+        Loan loan = this.createAndPersistBookAndLoan(LocalDate.now());
 
       Page<Loan> result = repository.findByBookIsbnOrCustomer(
               "123","Kayron", PageRequest.of(0,10));
@@ -60,12 +62,43 @@ public class LoanRepositoryTest {
       assertThat(result.getTotalElements()).isEqualTo(1);
 
     }
+    @Test
+    @DisplayName("Deve obter emprestimos cuja data de emprestimo for menor ou igual a tres dias atrás e não retornados")
+    public void findByLoanNotRetornedTeste(){
+       Loan loan = createAndPersistBookAndLoan(LocalDate.now().minusDays(5));
 
-    private Loan createAndPersistBookAndLoan() {
+        List<Loan>result = repository.findByLoanComDiasDeAtrasoDeRetorno(LocalDate.now().minusDays(4));
+
+        assertThat(result).hasSize(1);
+        assertThat(result).contains(loan);
+
+
+    }
+
+    @Test
+    @DisplayName("Não Deve obter emprestimos cuja data de emprestimo for menor ou igual a tres dias atrás e não retornados")
+    public void notFindByLoanNotRetornedTeste(){
+        Loan loan = createAndPersistBookAndLoan(LocalDate.now());
+
+        List<Loan>result = repository.findByLoanComDiasDeAtrasoDeRetorno(LocalDate.now().minusDays(4));
+
+        assertThat(result).isEmpty();
+
+
+    }
+
+
+
+    private Loan createAndPersistBookAndLoan( LocalDate dataAtual) {
         Book book = createBook();
         entityManager.persist(book);
 
-        Loan loan = Loan.builder().loanDate(LocalDate.now()).costumer("Kayron").book(book).build();
+        Loan loan = Loan.builder()
+                .loanDate(dataAtual)
+                .costumer("Kayron")
+                .book(book)
+                .costumerEmail("dowglas@email.com")
+                .build();
         entityManager.persist(loan);
        return loan;
     }
