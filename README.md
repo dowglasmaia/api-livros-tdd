@@ -1,4 +1,5 @@
 # api-livros-tdd
+[![Build Status](https://travis-ci.com/dowglasmaia/api-livros-tdd.svg?branch=master)](https://travis-ci.com/dowglasmaia/api-livros-tdd)
 
 #Tecnologia de Suporte 
 * http://modelmapper.org/getting-started/
