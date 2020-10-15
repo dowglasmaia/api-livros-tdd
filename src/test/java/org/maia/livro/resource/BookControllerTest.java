@@ -14,7 +14,8 @@ import org.maia.livro.domain.Book;
 import org.maia.livro.dtos.BookDTO;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.restcontroller.BookController;
-import org.maia.livro.services.impl.BookServicesImpl;
+import org.maia.livro.services.interfaces.BookServices;
+import org.maia.livro.services.interfaces.LoanServices;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,10 @@ public class BookControllerTest {
     MockMvc mvc;
 
     @MockBean
-    BookServicesImpl services;
+    BookServices services;
+    
+    @MockBean
+    LoanServices loanServices;
 
     private BookDTO createNewBook() {
         return BookDTO.builder().author("Dowglas Maia").title("Game of Thrones Vol 05").isbn("Vol 5 03º Ed").build();
