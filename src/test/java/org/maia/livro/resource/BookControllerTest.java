@@ -1,5 +1,6 @@
 package org.maia.livro.resource;
 
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ActiveProfiles("test")
 @WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
+@RequiredArgsConstructor
 public class BookControllerTest {
 
     static String BOOK_API = "/api/books";

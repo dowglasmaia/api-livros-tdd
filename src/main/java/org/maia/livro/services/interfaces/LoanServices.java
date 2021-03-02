@@ -1,5 +1,9 @@
 package org.maia.livro.services.interfaces;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
+
 import org.maia.livro.domain.Book;
 import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.LoanFilterDTO;
@@ -8,12 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 
 @Service
-public interface LoanServices {
+public interface LoanServices extends Serializable {
 
     @Transactional(rollbackFor = Exception.class)
     Loan save(Loan loan);
