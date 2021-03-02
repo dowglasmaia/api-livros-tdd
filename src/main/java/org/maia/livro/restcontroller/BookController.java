@@ -6,8 +6,11 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.maia.livro.domain.Book;
+import org.maia.livro.domain.Loan;
 import org.maia.livro.dtos.BookDTO;
+import org.maia.livro.dtos.LoanDTO;
 import org.maia.livro.services.interfaces.BookServices;
+import org.maia.livro.services.interfaces.LoanServices;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,7 +39,9 @@ import lombok.extern.slf4j.Slf4j;
 public class BookController {
 
 
-   private final BookServices service;
+
+    private final LoanServices loanServices;
+    private final BookServices service;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -73,7 +78,7 @@ public class BookController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public BookDTO update(@PathVariable Long id, BookDTO dto) {
+    public BookDTO update(@PathVariable Long id, @RequestBody BookDTO dto) {
         return service.getById(id).map(book -> {
             book.setAuthor(dto.getAuthor());
             book.setTitle(dto.getTitle());
@@ -112,8 +117,12 @@ public class BookController {
 
         return new PageImpl<BookDTO>(list, pagRequest, result.getTotalElements() );
 
+
    
    
+
+
+
 
     @GetMapping("/{id}/loans")
     public Page<LoanDTO>loansByBook(@PathVariable Long id, Pageable pageable){
@@ -133,13 +142,6 @@ public class BookController {
 
         return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
     }
-
-
-        //return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
-    }*/
-	
-
-
 
 
 }

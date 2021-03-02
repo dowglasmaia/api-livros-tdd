@@ -1,8 +1,12 @@
 package org.maia.livro.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,9 +15,9 @@ import org.maia.livro.domain.Book;
 import org.maia.livro.dtos.BookDTO;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.restcontroller.BookController;
-import org.maia.livro.services.impl.BookServicesImpl;
+import org.maia.livro.services.interfaces.BookServices;
+import org.maia.livro.services.interfaces.LoanServices;
 import org.mockito.BDDMockito;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,11 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-
-import java.util.Arrays;
-import java.util.Optional;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -48,7 +48,10 @@ public class BookControllerTest {
     MockMvc mvc;
 
     @MockBean
-    BookServicesImpl services;
+    BookServices services;
+    
+    @MockBean
+    LoanServices loanServices;
 
     private BookDTO createNewBook() {
         return BookDTO.builder().author("Dowglas Maia").title("Game of Thrones Vol 05").isbn("Vol 5 03º Ed").build();
