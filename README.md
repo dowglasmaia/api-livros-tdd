@@ -33,3 +33,5 @@
 ### Cobertura de Testes
 * https://www.eclemma.org/jacoco/trunk/doc/maven.html
 * https://sonatype.github.io/ossindex-maven/maven-plugin/
+* https://codecov.io/gh
+* https://github.com/codecov/example-java-maven
