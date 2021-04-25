@@ -1,7 +1,7 @@
 package org.maia.livro.services.impl;
 
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
 import org.maia.livro.domain.Book;
 import org.maia.livro.exception.BusinessException;
 import org.maia.livro.repository.BookRepository;
@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j	
 @Service
+@RequiredArgsConstructor
 public class BookServicesImpl implements BookServices {
 
     private BookRepository repository;
