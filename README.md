@@ -1,6 +1,8 @@
 # api-livros
 [![Build Status](https://travis-ci.com/dowglasmaia/api-livros-tdd.svg?branch=master)](https://travis-ci.com/dowglasmaia/api-livros-tdd)
 
+[![codecov](https://codecov.io/gh/dowglasmaia/api-livros-tdd/branch/master/graph/badge.svg?token=PZ9IBEZPSF)](https://codecov.io/gh/dowglasmaia/api-livros-tdd)
+
 ## Tecnologia de Suporte 
 * http://modelmapper.org/getting-started/
 
