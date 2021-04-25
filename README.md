@@ -29,3 +29,7 @@
 * http://localhost:8080/actuator
 
 * https://travis-ci.org/
+
+### Cobertura de Testes
+* https://www.eclemma.org/jacoco/trunk/doc/maven.html
+* https://sonatype.github.io/ossindex-maven/maven-plugin/
