@@ -35,6 +35,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.RequiredArgsConstructor;
+
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest(controllers = BookController.class)

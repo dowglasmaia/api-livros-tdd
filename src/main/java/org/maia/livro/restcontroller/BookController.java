@@ -142,6 +142,6 @@ public class BookController {
 
         return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
     }
-
+*/
 
 }
